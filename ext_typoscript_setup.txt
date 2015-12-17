@@ -1,1 +1,0 @@
-includeLibs.etcachetsobjects = EXT:et_cachetsobjects/user_etcachetsobjects.php
