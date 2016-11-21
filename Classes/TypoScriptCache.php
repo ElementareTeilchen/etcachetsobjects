@@ -47,11 +47,6 @@ class TypoScriptCache extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      */
     function handleElement($content, $conf)
     {
-        // only use caching, if not in Backend (preview mode contains pages which are hidden)
-        if ($GLOBALS['TSFE']->beUserLogin) {
-            return $this->cObj->getContentObject($conf['conf'])->render($conf['conf.']);
-        }
-
         // only use caching if domain is lowercase, we suspect problems with
 #        if ($currentDomainIdentifier != strtolower($currentDomainIdentifier)) {
 #            file_put_contents(PATH_site . 'et_log/log_domainproblems.txt', strftime('%Y-%m-%d') . ' - ' . $currentDomainIdentifier . "\n", FILE_APPEND);
@@ -59,19 +54,21 @@ class TypoScriptCache extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 #        }
 
         $uniqueCacheIdentifiers = array();
-        $cacheTags = array();
+
+        // each BE user gets own cache because of access restricted pages
+        // on big sites this makes sense because if editor works on content
+        // she has to wait several seconds each time she checks the frontend mainly because of the menu
+        if ($GLOBALS['TSFE']->beUserLogin && !empty($GLOBALS['BE_USER']->user['uid'])) {
+            $uniqueCacheIdentifiers['beUser'] = $GLOBALS['BE_USER']->user['uid'];
+        }
+
+
         // the current domain is used
         // - maybe as tag to clear cache for all TS-caches for this domain, depending on extConf settings
         // - as additional info to create unique identifier, because TS might be the same for different domains
         // MIND: if you change identifier here, do also in hook for cache clearing
         $uniqueCacheIdentifiers['currentDomain'] = trim(str_replace('.', '', \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_HOST_ONLY')));
-        $cacheTags[] = $uniqueCacheIdentifiers['currentDomain'];
 
-        // the PageTS setting
-        if ($weHavePageTS) {
-            $uniqueCacheIdentifiers['pageTS'] = 'xxx';
-            $cacheTags[] = 'xxx';
-        }
         // additionalUniqueCacheParameters via TypoScript
         if (isset($conf['additionalUniqueCacheParameters']) && is_array($conf['additionalUniqueCacheParameters.'])) {
             $uniqueCacheIdentifiers['typoScript'] = $this->cObj->getContentObject($conf['additionalUniqueCacheParameters'])->render($conf['additionalUniqueCacheParameters.']);
@@ -81,10 +78,23 @@ class TypoScriptCache extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         $cacheIdentifier = sha1(serialize($uniqueCacheIdentifiers) . serialize($conf));
 
 
+        $cacheTags = array();
+        $cacheTags[] = $uniqueCacheIdentifiers['currentDomain'];
+
+
         $tsCache = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('cache_etcachetsobjects');
 
         if (FALSE === ($content = $tsCache->get($cacheIdentifier))) {
             $content = $this->cObj->getContentObject($conf['conf'])->render($conf['conf.']);
+
+            // additionalTags via TypoScript
+            if (isset($conf['additionalTags.']) && is_array($conf['additionalTags.'])) {
+                foreach ($conf['additionalTags.'] as $tag) {
+                    $cacheTags[] = $tag;
+
+                }
+            }
+
             $tsCache->set(
                 $cacheIdentifier,
                 $content,
