@@ -12,31 +12,31 @@ Currently we use it only for menus, other TypoScript objects should work, but pr
 
 ## Usage example
 
-lib.menu.sector = HMENU
-lib.menu.sector {
-    [...]
-}
-    // only use caching if no fe_user is logged in, else just stay with original TS
-    lib.menu.sector_cached < lib.menu.sector
-[loginUser =]
-    lib.menu.sector_cached >
-    lib.menu.sector_cached = USER
-    lib.menu.sector_cached {
-        userFunc = ElementareTeilchen\EtCachetsobjects\TypoScriptCache->handleElement
-        conf < lib.menu.sector
-        cacheTime = 0 // "0" means unlimited liftime, cleared via backend saving hook on page changes
-        //here we can set parameter needed for creating different cache entries
-        additionalUniqueCacheParameters = COA
-        additionalUniqueCacheParameters {
-            10 = TEXT
-            10.value = 0
-            10.override.data = GP:L
-
-            20 = TEXT
-            20.value = {$theme.pages.sectorstart_id}
-        }
+    lib.menu.sector = HMENU
+    lib.menu.sector {
+        [...]
     }
-[global]
+        // only use caching if no fe_user is logged in, else just stay with original TS
+        lib.menu.sector_cached < lib.menu.sector
+    [loginUser =]
+        lib.menu.sector_cached >
+        lib.menu.sector_cached = USER
+        lib.menu.sector_cached {
+            userFunc = ElementareTeilchen\EtCachetsobjects\TypoScriptCache->handleElement
+            conf < lib.menu.sector
+            cacheTime = 0 // "0" means unlimited liftime, cleared via backend saving hook on page changes
+            //here we can set parameter needed for creating different cache entries
+            additionalUniqueCacheParameters = COA
+            additionalUniqueCacheParameters {
+                10 = TEXT
+                10.value = 0
+                10.override.data = GP:L
+    
+                20 = TEXT
+                20.value = {$theme.pages.sectorstart_id}
+            }
+        }
+    [global]
 
 ## Cache Invalidation
 
