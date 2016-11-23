@@ -36,7 +36,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TypoScriptCache extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 {
-    var $extKey = 'et_cachetsobjects';
+    public $extKey = 'et_cachetsobjects';
 
 
     /**
@@ -48,7 +48,7 @@ class TypoScriptCache extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      * @return    The content that is displayed on the website
      * @deprecated
      */
-    function handleElement($content, $conf)
+    public function handleElement($content, $conf)
     {
         return $this->databaseBackend($content, $conf);
     }
@@ -62,9 +62,9 @@ class TypoScriptCache extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      * @param    array $conf : The PlugIn configuration
      * @return    The content that is displayed on the website
      */
-    function databaseBackend($content, $conf)
+    public function databaseBackend($content, $conf)
     {
-        $tsCache = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('cache_etcachetsobjects');
+        $tsCache = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('etcachetsobjects_db');
         $uniqueCacheIdentifiers = array();
 
         // each BE user gets own cache because of access restricted pages
@@ -99,9 +99,9 @@ class TypoScriptCache extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      * @param    array $conf : The PlugIn configuration
      * @return    The content that is displayed on the website
      */
-    function transientBackend($content, $conf)
+    public function transientBackend($content, $conf)
     {
-        $tsCache = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('cache_etcachetsobjects_transient');
+        $tsCache = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('etcachetsobjects_transient');
         $cacheIdentifier = $this->createCacheIdentifier($conf);
         return $this->checkCache($tsCache, $conf, $cacheIdentifier);
     }
@@ -136,7 +136,7 @@ class TypoScriptCache extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      * @param $cacheTags
      * @return string
      */
-    function checkCache($currentCache, $conf, $cacheIdentifier, $cacheTags=array())
+    protected function checkCache($currentCache, $conf, $cacheIdentifier, $cacheTags=array())
     {
         if (FALSE === ($content = $currentCache->get($cacheIdentifier))) {
             $content = $this->cObj->getContentObject($conf['conf'])->render($conf['conf.']);
