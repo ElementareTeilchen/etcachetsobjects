@@ -84,7 +84,7 @@ class DataHandler
      */
     private function handleFlushing($pageId)
     {
-        $tsCache = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('cache_etcachetsobjects');
+        $tsCache = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('etcachetsobjects_db');
 
         switch ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['et_cachetsobjects']['setup']['clearCacheVariant']) {
 
