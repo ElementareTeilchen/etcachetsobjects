@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = array(
     'description' => 'some TypoScript Objects (especially menues) are quite expensive to render, but might be the same on different pages, thus caching that output is useful. Several variants of cache invalidation available.',
     'category' => 'plugin',
     'shy' => 0,
-    'version' => '3.0.1',
+    'version' => '4.0.0',
     'dependencies' => '',
     'conflicts' => '',
     'priority' => '',
@@ -32,6 +32,13 @@ $EM_CONF[$_EXTKEY] = array(
     'author_company' => 'http://www.elementare-teilchen.de',
     'CGLcompliance' => '',
     'CGLcompliance_note' => '',
+    'autoload' =>
+        array (
+            'psr-4' =>
+                array (
+                    'ElementareTeilchen\\EtCachetsobjects\\' => 'Classes/',
+                ),
+        ),
     'constraints' => array(
         'depends' => array(
             'typo3' => '7.6.0-0.0.0',

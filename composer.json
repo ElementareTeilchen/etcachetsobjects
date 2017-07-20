@@ -1,0 +1,30 @@
+{
+  "name": "elementareteilchen/etcachetsobjects",
+  "type": "typo3-cms-extension",
+  "description": "TypoScript API to allow caching of expensive TypoScript objects like menus",
+  "keywords": [
+    "TYPO3",
+    "extension",
+    "typoscript",
+    "cache"
+  ],
+  "authors": [
+    {
+      "name": "Franz Kugelmann",
+      "role": "Developer",
+      "homepage": "http://www.elementare-teilchen.de"
+    }
+  ],
+  "license": [
+    "GPL-2.0+"
+  ],
+  "require": {
+    "typo3/cms-core": "^8.7",
+    "php": ">=7.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "ElementareTeilchen\\EtCachetsobjects\\": "Classes/"
+    }
+  }
+}

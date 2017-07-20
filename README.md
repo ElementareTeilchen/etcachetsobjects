@@ -10,6 +10,8 @@ Perfect to be cached!
 
 Currently we use it only for menus, other TypoScript objects should work, but probably the cache invalidation needs refinement then
 
+HINT FOR DEBUGGING: we activate caching only if no BE user is logged in.
+
 ## Usage example 1: cache (part of) menu, which is identical on different pages
 
     lib.menu.sector = HMENU
@@ -22,8 +24,6 @@ Currently we use it only for menus, other TypoScript objects should work, but pr
         lib.menu.sector_cached >
         lib.menu.sector_cached = USER
         lib.menu.sector_cached {
-            // deprecated
-            #userFunc = ElementareTeilchen\EtCachetsobjects\TypoScriptCache->handleElement
             userFunc = ElementareTeilchen\EtCachetsobjects\TypoScriptCache->databaseBackend
             conf < lib.menu.sector
             cacheTime = 0 // "0" means unlimited liftime, cleared via backend saving hook on page changes
