@@ -1,7 +1,7 @@
 <?php
 
 ########################################################################
-# Extension Manager/Repository config file for ext: "et_cachetsobjects"
+# Extension Manager/Repository config file for ext: "etcachetsobjects"
 #
 # Auto generated 19-06-2008 13:13
 #
@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = array(
     'description' => 'some TypoScript Objects (especially menues) are quite expensive to render, but might be the same on different pages, thus caching that output is useful. Several variants of cache invalidation available.',
     'category' => 'plugin',
     'shy' => 0,
-    'version' => '4.0.0',
+    'version' => '5.0.0',
     'dependencies' => '',
     'conflicts' => '',
     'priority' => '',
@@ -36,7 +36,7 @@ $EM_CONF[$_EXTKEY] = array(
         array (
             'psr-4' =>
                 array (
-                    'ElementareTeilchen\\EtCachetsobjects\\' => 'Classes/',
+                    'ElementareTeilchen\\Etcachetsobjects\\' => 'Classes/',
                 ),
         ),
     'constraints' => array(

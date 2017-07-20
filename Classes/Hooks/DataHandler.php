@@ -1,6 +1,6 @@
 <?php
 
-namespace ElementareTeilchen\EtCachetsobjects\Hooks;
+namespace ElementareTeilchen\Etcachetsobjects\Hooks;
 
     /***************************************************************
      *  Copyright notice
@@ -86,7 +86,7 @@ class DataHandler
     {
         $tsCache = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('etcachetsobjects_db');
 
-        switch ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['et_cachetsobjects']['setup']['clearCacheVariant']) {
+        switch ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['etcachetsobjects']['setup']['clearCacheVariant']) {
 
             case 'PageTS Setting':
                 $pageTSconfig = BackendUtility::getPagesTSconfig($pageId);

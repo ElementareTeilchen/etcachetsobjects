@@ -1,5 +1,5 @@
 <?php
-namespace ElementareTeilchen\EtCachetsobjects;
+namespace ElementareTeilchen\Etcachetsobjects;
 
 /***************************************************************
  *  Copyright notice
@@ -34,7 +34,7 @@ namespace ElementareTeilchen\EtCachetsobjects;
 
 class MenuVariantCheck
 {
-    var $extKey = 'et_cachetsobjects';
+    var $extKey = 'etcachetsobjects';
 
     /**
      * if user is on deeper levels we cannot use same menu anymore because then we show subpages depending on current page

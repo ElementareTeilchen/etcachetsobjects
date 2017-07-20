@@ -1,4 +1,4 @@
-et_cachetsobjects: Caching possibility for expensive TypoScript Objects like menus
+etcachetsobjects: Caching possibility for expensive TypoScript Objects like menus
 ==================================================================================
 
 ## Idea behind
@@ -24,7 +24,7 @@ HINT FOR DEBUGGING: we activate caching only if no BE user is logged in.
         lib.menu.sector_cached >
         lib.menu.sector_cached = USER
         lib.menu.sector_cached {
-            userFunc = ElementareTeilchen\EtCachetsobjects\TypoScriptCache->databaseBackend
+            userFunc = ElementareTeilchen\Etcachetsobjects\TypoScriptCache->databaseBackend
             conf < lib.menu.sector
             cacheTime = 0 // "0" means unlimited liftime, cleared via backend saving hook on page changes
             //here we can set parameter needed for creating different cache entries
@@ -49,7 +49,7 @@ HINT FOR DEBUGGING: we activate caching only if no BE user is logged in.
 
     lib.pageRootlineCategoryId_cached = USER
     lib.pageRootlineCategoryId_cached {
-        userFunc = ElementareTeilchen\EtCachetsobjects\TypoScriptCache->transientBackend
+        userFunc = ElementareTeilchen\Etcachetsobjects\TypoScriptCache->transientBackend
         conf < lib.pageRootlineCategoryId
     }
     

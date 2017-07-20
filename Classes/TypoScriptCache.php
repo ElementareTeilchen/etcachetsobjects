@@ -1,5 +1,5 @@
 <?php
-namespace ElementareTeilchen\EtCachetsobjects;
+namespace ElementareTeilchen\Etcachetsobjects;
 
 /***************************************************************
  *  Copyright notice
@@ -36,7 +36,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TypoScriptCache extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
 {
-    public $extKey = 'et_cachetsobjects';
+    public $extKey = 'etcachetsobjects';
 
 
     /**
