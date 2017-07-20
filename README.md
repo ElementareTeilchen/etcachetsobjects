@@ -10,7 +10,7 @@ Perfect to be cached!
 
 Currently we use it only for menus, other TypoScript objects should work, but probably the cache invalidation needs refinement then
 
-HINT FOR DEBUGGING: we activate caching only if no BE user is logged in.
+HINT FOR DEBUGGING: we activate caching only if no FE user is logged in. Every BE user gets her own individual cache.
 
 ## Usage example 1: cache (part of) menu, which is identical on different pages
 
