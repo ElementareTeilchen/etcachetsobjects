@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = array(
     'description' => 'some TypoScript Objects (especially menues) are quite expensive to render, but might be the same on different pages, thus caching that output is useful. Several variants of cache invalidation available.',
     'category' => 'plugin',
     'shy' => 0,
-    'version' => '5.0.0',
+    'version' => '5.0.2',
     'dependencies' => '',
     'conflicts' => '',
     'priority' => '',
@@ -41,7 +41,7 @@ $EM_CONF[$_EXTKEY] = array(
         ),
     'constraints' => array(
         'depends' => array(
-            'typo3' => '7.6.0-0.0.0',
+            'typo3' => '8.7.0-0.0.0',
         ),
         'conflicts' => array(),
         'suggests' => array(),

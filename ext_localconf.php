@@ -11,7 +11,7 @@ if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations
     $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['etcachetsobjects_db'] = [
         // we use default backend (database at time of writing)
         'frontend' => 'TYPO3\\CMS\\Core\\Cache\\Frontend\\StringFrontend',
-	'groups' => ['pages','all'],
+        'groups' => ['pages', 'all'],
     ];
 }
 
