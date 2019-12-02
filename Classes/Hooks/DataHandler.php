@@ -31,6 +31,7 @@ namespace ElementareTeilchen\Etcachetsobjects\Hooks;
  */
 
 use \TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DataHandler
@@ -84,6 +85,7 @@ class DataHandler
      */
     private function handleFlushing($pageId)
     {
+        /** @var FrontendInterface $tsCache */
         $tsCache = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('etcachetsobjects_db');
         $extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['etcachetsobjects']);
         switch ($extConf['clearCacheVariant']) {
@@ -92,7 +94,9 @@ class DataHandler
                 $pageTSconfig = BackendUtility::getPagesTSconfig($pageId);
                 $tagsToBeFlushed = explode(',',@$pageTSconfig['tx_etcachetsobjects.']['clearByTags']);
                 foreach($tagsToBeFlushed as $cacheTag) {
-                    $tsCache->flushByTag($cacheTag);
+                    if ($tsCache->isValidTag($cacheTag)) {
+                        $tsCache->flushByTag($cacheTag);
+                    }
                 }
                 break;
 
@@ -104,8 +108,9 @@ class DataHandler
                     foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['realurl'] as $configuredDomainName => $configuredDomainConfiguration) {
                         if ($configuredDomainConfiguration['pagePath']['rootpage_id'] == $pageDataArray['uid']) {
                             $foundDomain = str_replace('.', '', $configuredDomainName);
-                            #debug($foundDomain);
-                            $tsCache->flushByTag($foundDomain);
+                            if ($tsCache->isValidTag($foundDomain)) {
+                                $tsCache->flushByTag($foundDomain);
+                            }
                         }
                     }
                 }
