@@ -70,7 +70,8 @@ class TypoScriptCache extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         // each BE user gets own cache because of access restricted pages
         // on big sites this makes sense because if editor works on content
         // she has to wait several seconds each time she checks the frontend mainly because of the menu
-        if ($GLOBALS['TSFE']->beUserLogin && !empty($GLOBALS['BE_USER']->user['uid'])) {
+        $context = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Context\Context::class);
+        if ($context->getPropertyFromAspect('backend.user', 'isLoggedIn') && !empty($GLOBALS['BE_USER']->user['uid'])) {
             $uniqueCacheIdentifiers['beUser'] = $GLOBALS['BE_USER']->user['uid'];
         }
 
@@ -129,7 +130,7 @@ class TypoScriptCache extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
      * check if cache already exists
      * fetch content if there or
      * create, store in cache and return content
-     * 
+     *
      * @param $currentCache
      * @param $conf
      * @param $cacheIdentifier

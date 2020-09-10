@@ -87,8 +87,9 @@ class DataHandler
     {
         /** @var FrontendInterface $tsCache */
         $tsCache = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('etcachetsobjects_db');
-        $extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['etcachetsobjects']);
-        switch ($extConf['clearCacheVariant']) {
+        $extConfiguration = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['etcachetsobjects'];
+
+        switch ($extConfiguration['clearCacheVariant']) {
 
             case 'PageTS Setting':
                 $pageTSconfig = BackendUtility::getPagesTSconfig($pageId);

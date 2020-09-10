@@ -50,10 +50,7 @@ class MenuVariantCheck
      */
     function levelGroupIdentifier($content, $conf)
     {
-        // to we have something already there to check that?
-        $currentPageSubpagesCount = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows('*','pages','pid=' . $GLOBALS['TSFE']->id);
-        #echo '<pre>';print_r($currentPageSubpagesCount);echo '</pre>';
-        #echo '<pre>';print_r($GLOBALS['TSFE']->rootLine);echo '</pre>';
+        $currentPageSubpagesCount = count($GLOBALS['TSFE']->sys_page->getMenu($GLOBALS['TSFE']->id, 'uid'));
 
         // go from current page up the rootline
         $sectorMenuLevelCount = 0;
