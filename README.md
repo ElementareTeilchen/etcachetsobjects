@@ -32,7 +32,7 @@ HINT FOR DEBUGGING: we activate caching only if no FE user is logged in. Every B
             additionalUniqueCacheParameters {
                 10 = TEXT
                 10.value = 0
-                10.override.data = GP:L
+                10.override.data = siteLanguage:languageId
     
                 15 = TEXT
                 15.value = 0
