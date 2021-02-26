@@ -50,7 +50,8 @@ class MenuVariantCheck
      */
     function levelGroupIdentifier($content, $conf)
     {
-        $currentPageSubpagesCount = count($GLOBALS['TSFE']->sys_page->getMenu($GLOBALS['TSFE']->id, 'uid'));
+        // beware: don't use second parameter in getMenu to filter fields, you need quite some for correct mount point behaviour
+        $currentPageSubpagesCount = count($GLOBALS['TSFE']->sys_page->getMenu($GLOBALS['TSFE']->id));
 
         // go from current page up the rootline
         $sectorMenuLevelCount = 0;
