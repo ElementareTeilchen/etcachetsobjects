@@ -1,4 +1,9 @@
 {
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "etcachetsobjects"
+    }
+  },
   "name": "elementareteilchen/etcachetsobjects",
   "type": "typo3-cms-extension",
   "description": "TypoScript API to allow caching of expensive TypoScript objects like menus",
