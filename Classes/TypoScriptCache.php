@@ -1,6 +1,8 @@
 <?php
 namespace ElementareTeilchen\Etcachetsobjects;
 
+use TYPO3\CMS\Frontend\Plugin\AbstractPlugin;
+use TYPO3\CMS\Core\Context\Context;
 /***************************************************************
  *  Copyright notice
  *
@@ -34,7 +36,7 @@ namespace ElementareTeilchen\Etcachetsobjects;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class TypoScriptCache extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
+class TypoScriptCache extends AbstractPlugin
 {
     public $extKey = 'etcachetsobjects';
 
@@ -70,7 +72,7 @@ class TypoScriptCache extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         // each BE user gets own cache because of access restricted pages
         // on big sites this makes sense because if editor works on content
         // she has to wait several seconds each time she checks the frontend mainly because of the menu
-        $context = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Context\Context::class);
+        $context = GeneralUtility::makeInstance(Context::class);
         if ($context->getPropertyFromAspect('backend.user', 'isLoggedIn') && !empty($GLOBALS['BE_USER']->user['uid'])) {
             $uniqueCacheIdentifiers['beUser'] = $GLOBALS['BE_USER']->user['uid'];
         }
@@ -79,7 +81,7 @@ class TypoScriptCache extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin
         // - maybe as tag to clear cache for all TS-caches for this domain, depending on extConf settings
         // - as additional info to create unique identifier, because TS might be the same for different domains
         // MIND: if you change identifier here, do also in hook for cache clearing
-        $uniqueCacheIdentifiers['currentDomain'] = trim(str_replace('.', '', \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_HOST_ONLY')));
+        $uniqueCacheIdentifiers['currentDomain'] = trim(str_replace('.', '', GeneralUtility::getIndpEnv('TYPO3_HOST_ONLY')));
 
         $cacheIdentifier = $this->createCacheIdentifier($conf, $uniqueCacheIdentifiers);
 
