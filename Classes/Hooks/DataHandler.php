@@ -30,8 +30,10 @@ namespace ElementareTeilchen\Etcachetsobjects\Hooks;
  * @author    Franz Kugelmann <franz.kugelmann@elementare-teilchen.de>
  */
 
+use ElementareTeilchen\Etcachetsobjects\Event\CollectCacheTagsToBeClearedEvent;
 use \TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DataHandler
@@ -94,6 +96,13 @@ class DataHandler
             case 'PageTS Setting':
                 $pageTSconfig = BackendUtility::getPagesTSconfig($pageId);
                 $tagsToBeFlushed = explode(',',@$pageTSconfig['tx_etcachetsobjects.']['clearByTags']);
+
+                $eventDispatcher =  GeneralUtility::makeInstance(EventDispatcher::class);
+                $tagsToBeFlushed = $eventDispatcher->dispatch(
+                    new CollectCacheTagsToBeClearedEvent($pageId, $tagsToBeFlushed)
+                )->getCacheTags();
+
+                $tagsToBeFlushed = array_unique($tagsToBeFlushed);
                 foreach($tagsToBeFlushed as $cacheTag) {
                     if ($tsCache->isValidTag($cacheTag)) {
                         $tsCache->flushByTag($cacheTag);
@@ -127,5 +136,3 @@ class DataHandler
     }
 
 }
-
-?>
