@@ -1,2 +1,2 @@
-# cat=cache; type=options[PageTS Setting , Domain based, From all pages]; label=LLL:EXT:etcachetsobjects/Resources/Private/Language/locallang.xlf:extConf.clearCacheVariant
+# cat=cache; type=options[PageTS Setting , Site based, From all pages]; label=LLL:EXT:etcachetsobjects/Resources/Private/Language/locallang.xlf:extConf.clearCacheVariant
 clearCacheVariant = From all pages

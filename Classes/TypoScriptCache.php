@@ -1,6 +1,8 @@
 <?php
 namespace ElementareTeilchen\Etcachetsobjects;
 
+use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Frontend\Plugin\AbstractPlugin;
 use TYPO3\CMS\Core\Context\Context;
 /***************************************************************
@@ -77,17 +79,17 @@ class TypoScriptCache extends AbstractPlugin
             $uniqueCacheIdentifiers['beUser'] = $GLOBALS['BE_USER']->user['uid'];
         }
 
-        // the current domain is used
-        // - maybe as tag to clear cache for all TS-caches for this domain, depending on extConf settings
-        // - as additional info to create unique identifier, because TS might be the same for different domains
-        // MIND: if you change identifier here, do also in hook for cache clearing
-        $uniqueCacheIdentifiers['currentDomain'] = trim(str_replace('.', '', GeneralUtility::getIndpEnv('TYPO3_HOST_ONLY')));
+        $cacheTags = [];
+
+        $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+        $site = $siteFinder->getSiteByPageId($GLOBALS['TSFE']->id);
+        if ($site instanceof Site) {
+            // MIND: if you change identifier here, do also in hook for cache clearing
+            $uniqueCacheIdentifiers['siteIdentifier'] = $site->getIdentifier();
+            $cacheTags[] = $site->getIdentifier();
+        }
 
         $cacheIdentifier = $this->createCacheIdentifier($conf, $uniqueCacheIdentifiers);
-
-
-        $cacheTags = array();
-        $cacheTags[] = $uniqueCacheIdentifiers['currentDomain'];
 
         return $this->checkCache($tsCache, $conf, $cacheIdentifier, $cacheTags);
     }

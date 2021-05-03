@@ -34,6 +34,8 @@ use ElementareTeilchen\Etcachetsobjects\Event\CollectCacheTagsToBeClearedEvent;
 use \TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DataHandler
@@ -94,6 +96,10 @@ class DataHandler
         switch ($extConfiguration['clearCacheVariant']) {
 
             case 'PageTS Setting':
+                // if pageId is no int (eg "NEW_1"), we just finish cache flushing
+                if (is_int($pageId) === false) {
+                    return;
+                }
                 $pageTSconfig = BackendUtility::getPagesTSconfig($pageId);
                 $tagsToBeFlushed = explode(',',@$pageTSconfig['tx_etcachetsobjects.']['clearByTags']);
 
@@ -108,22 +114,21 @@ class DataHandler
                         $tsCache->flushByTag($cacheTag);
                     }
                 }
+
                 break;
 
-            case 'Domain based':
-                $rootLine = BackendUtility::BEgetRootLine($pageId);
-                //page with id 0 wont contain domain record
-                array_pop($rootLine);
-                foreach ($rootLine as $pageDataArray) {
-                    foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['realurl'] as $configuredDomainName => $configuredDomainConfiguration) {
-                        if ($configuredDomainConfiguration['pagePath']['rootpage_id'] == $pageDataArray['uid']) {
-                            $foundDomain = str_replace('.', '', $configuredDomainName);
-                            if ($tsCache->isValidTag($foundDomain)) {
-                                $tsCache->flushByTag($foundDomain);
-                            }
-                        }
-                    }
+            case 'Site based':
+                // if pageId is no int (eg "NEW_1"), we just finish cache flushing
+                if (is_int($pageId) === false) {
+                    return;
                 }
+
+                $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+                $site = $siteFinder->getSiteByPageId($pageId);
+                if ($site instanceof Site) {
+                    $tsCache->flushByTag($site->getIdentifier());
+                }
+
                 break;
 
             // default is also just flush all
