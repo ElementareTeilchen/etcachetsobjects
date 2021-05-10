@@ -4,11 +4,11 @@ etcachetsobjects: Caching possibility for expensive TypoScript Objects like menu
 ## Idea behind
 
 On bigger pages you have quite often big menus with lots of pages and levels (like responsive menus or flyout menus)
-The rendering of these menus is quite heavy and is normally done on every rendered page
+The rendering of these menus is quite heavy and is normally done on every rendered page. 
 If you do not need to mark active or current pages or do this on browser side via Javascript, then the menu might be idential on all / several pages.
 Perfect to be cached!
 
-Currently we use it only for menus, other TypoScript objects should work, but probably the cache invalidation needs refinement then
+Currently we use it only for menus, other TypoScript objects should work, but probably the cache invalidation needs refinement then.
 
 HINT FOR DEBUGGING: we activate caching only if no FE user is logged in. Every BE user gets her own individual cache.
 
