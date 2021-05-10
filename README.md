@@ -107,4 +107,25 @@ That one is used when you have a very big and deep page tree. On a certain level
 
 In the Extension Manager you can define which variant of invalidation you need.
 
+### PageTS Setting
+Only clear cache of configured cache tags.
+
+Specify which cache tags should be flushed when editing pages.
+Configure using Page TSconfig.
+Use cache tags you set in your typoscript when caching menus / libs.
+
+
+Example TSconfig setting:
+```
+tx_etcachetsobjects.clearByTags = cacheTag1, cacheTag2
+```
+
+
+### Site based
+Clear cache of whole site in which the edited page record resides in.
+
+
+### From all pages
+Clear all cache when a page record is edited.
+
 
