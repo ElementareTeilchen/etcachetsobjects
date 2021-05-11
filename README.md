@@ -112,9 +112,28 @@ Only clear cache of configured cache tags.
 
 Specify which cache tags should be flushed when editing pages.
 Configure using Page TSconfig.
-Use cache tags you set in your typoscript when caching menus / libs.
+Use cache tags you set in your TypoScript when caching menus / libs.
 
+#### Add additional cache tags in TypoScript (which can be cleared via backend saving hook)
+When configuring your cached menus / libs, you can add additional cache tags.
+Example:
+```
+lib.menu.sector_cached {
+    userFunc = ElementareTeilchen\Etcachetsobjects\TypoScriptCache->databaseBackend
+    conf < lib.menu.sector
 
+    ...
+
+    // no ContentObject like COA, TEXT needed, we just want the configuration value
+    additionalTags {
+        10 = sector_{$theme.pages.sectorstart_id}
+        20 = cacheTag1
+        30 = cacheTag2
+    }
+}
+```
+
+#### Configure cache tags to be cleared
 Example TSconfig setting:
 ```
 tx_etcachetsobjects.clearByTags = cacheTag1, cacheTag2
