@@ -146,6 +146,13 @@ class TypoScriptCache extends AbstractPlugin
         if (FALSE === ($content = $currentCache->get($cacheIdentifier))) {
             $content = $this->cObj->getContentObject($conf['conf'])->render($conf['conf.']);
 
+            // make sure we do not cache elements when in preview mode
+            // i.e. hidden pages are shown in menu
+            $context = GeneralUtility::makeInstance(Context::class);
+            if ($context->getPropertyFromAspect('frontend.preview', 'isPreview')) {
+                return $content;
+            }
+
             // additionalTags via TypoScript
             if (isset($conf['additionalTags.']) && is_array($conf['additionalTags.'])) {
                 foreach ($conf['additionalTags.'] as $tag) {
