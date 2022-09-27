@@ -149,7 +149,9 @@ class TypoScriptCache extends AbstractPlugin
             // make sure we do not cache elements when in preview mode
             // i.e. hidden pages are shown in menu
             $context = GeneralUtility::makeInstance(Context::class);
-            if ($context->getPropertyFromAspect('frontend.preview', 'isPreview')) {
+            if ($context->getPropertyFromAspect('frontend.preview', 'isPreview')
+                || $context->getPropertyFromAspect('visibility', 'includeHiddenPages')
+            ) {
                 return $content;
             }
 
