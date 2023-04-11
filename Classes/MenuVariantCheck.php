@@ -1,4 +1,5 @@
 <?php
+
 namespace ElementareTeilchen\Etcachetsobjects;
 
 /***************************************************************
@@ -34,7 +35,7 @@ namespace ElementareTeilchen\Etcachetsobjects;
 
 class MenuVariantCheck
 {
-    var $extKey = 'etcachetsobjects';
+    public $extKey = 'etcachetsobjects';
 
     /**
      * if user is on deeper levels we cannot use same menu anymore because then we show subpages depending on current page
@@ -43,12 +44,8 @@ class MenuVariantCheck
      *
      * root page of menu is defined by $conf['sectorstartId']
      * level from where on additional subpages might pop up: $conf['individualMenusComingAtLevel']
-     *
-     * @param    string $content : The PlugIn content
-     * @param    array $conf : The PlugIn configuration
-     * @return    The content that is displayed on the website
      */
-    function levelGroupIdentifier($content, $conf)
+    public function levelGroupIdentifier(string $content, array $conf): string
     {
         // beware: don't use second parameter in getMenu to filter fields, you need quite some for correct mount point behaviour
         $currentPageSubpagesCount = count($GLOBALS['TSFE']->sys_page->getMenu($GLOBALS['TSFE']->id));
@@ -56,26 +53,23 @@ class MenuVariantCheck
         // go from current page up the rootline
         $sectorMenuLevelCount = 0;
         foreach ($GLOBALS['TSFE']->rootLine as $page) {
-            #echo $page['uid']. '<br>';
             if ($page['uid'] == $conf['sectorstartId']) {
                 break;
             }
             $sectorMenuLevelCount++;
         }
 
-        // if on deeper level than $conf['individualMenuLevel'] and page has _NO_ subpages: use pageUid of parent page as additional identifier
+        // if on deeper level than $conf['individualMenusComingAtLevel'] and page has zero subpages: use pageUid of parent page as additional identifier
         if ($sectorMenuLevelCount > $conf['individualMenusComingAtLevel'] && $currentPageSubpagesCount === 0) {
-            return $GLOBALS['TSFE']->page['pid'];
+            return (string)$GLOBALS['TSFE']->page['pid'];
         }
 
-        // if on level $conf['individualMenuLevel'] or deeper and page has subpages: use pageUid as additional identifier
+        // if on level $conf['individualMenusComingAtLevel'] or deeper and page has subpages: use pageUid as additional identifier
         if ($sectorMenuLevelCount >= $conf['individualMenusComingAtLevel'] && $currentPageSubpagesCount > 0) {
-            return $GLOBALS['TSFE']->id;
+            return (string)$GLOBALS['TSFE']->id;
         }
 
         // all else: return nothing (no extra cacheIdentifier), all fine
         return '';
     }
 }
-
-?>

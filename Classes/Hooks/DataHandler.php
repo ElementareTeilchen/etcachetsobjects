@@ -2,28 +2,28 @@
 
 namespace ElementareTeilchen\Etcachetsobjects\Hooks;
 
-    /***************************************************************
-     *  Copyright notice
-     *
-     *  (c) 2012 Franz Kugelmann (franz.kugelmann@elementare-teilchen.de)
-     *  All rights reserved
-     *
-     *  This script is part of the TYPO3 project. The TYPO3 project is
-     *  free software; you can redistribute it and/or modify
-     *  it under the terms of the GNU General Public License as published by
-     *  the Free Software Foundation; either version 2 of the License, or
-     *  (at your option) any later version.
-     *
-     *  The GNU General Public License can be found at
-     *  http://www.gnu.org/copyleft/gpl.html.
-     *
-     *  This script is distributed in the hope that it will be useful,
-     *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-     *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     *  GNU General Public License for more details.
-     *
-     *  This copyright notice MUST APPEAR in all copies of the script!
-     ***************************************************************/
+/***************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2012 Franz Kugelmann (franz.kugelmann@elementare-teilchen.de)
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 /**
  * tcemain hooks. See ext_localconf.php for activating/deactivating them.
  *
@@ -31,16 +31,15 @@ namespace ElementareTeilchen\Etcachetsobjects\Hooks;
  */
 
 use ElementareTeilchen\Etcachetsobjects\Event\CollectCacheTagsToBeClearedEvent;
-use \TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\SiteFinder;
-use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DataHandler
 {
-
     /*
     * we need to clear our TS object caches if menu relevant data is saved in pages (title, nav_title, ...)
      * @param array Changed fields
@@ -49,7 +48,7 @@ class DataHandler
      * @param \TYPO3\CMS\Core\DataHandling\DataHandler reference to parent object
      * @return void
      */
-    function processDatamap_preProcessFieldArray(&$incomingFieldArray, $table, $id, &$parentObj)
+    public function processDatamap_preProcessFieldArray(&$incomingFieldArray, $table, $id, &$parentObj): void
     {
         if ($table == 'pages') {
             //$incomingFieldArray contains all fields: todo: how can we easily check only on some fields?
@@ -72,7 +71,7 @@ class DataHandler
      * @param \TYPO3\CMS\Core\DataHandling\DataHandler Unused reference to parent object
      * @return    void
      */
-    public function processCmdmap_preProcess($command, $table, $id, $value, &$pObj)
+    public function processCmdmap_preProcess($command, $table, $id, $value, &$pObj): void
     {
         if ($table == 'pages') {
             $this->handleFlushing($id);
@@ -87,7 +86,7 @@ class DataHandler
      * - whole tree is relevant (simple, but cache often cleared if many editor changes)
      * @param $pageId
      */
-    private function handleFlushing($pageId)
+    private function handleFlushing($pageId): void
     {
         /** @var FrontendInterface $tsCache */
         $tsCache = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('etcachetsobjects_db');
@@ -101,7 +100,7 @@ class DataHandler
                     return;
                 }
                 $pageTSconfig = BackendUtility::getPagesTSconfig($pageId);
-                $tagsToBeFlushed = explode(',',@$pageTSconfig['tx_etcachetsobjects.']['clearByTags']);
+                $tagsToBeFlushed = explode(',', @$pageTSconfig['tx_etcachetsobjects.']['clearByTags']);
 
                 $eventDispatcher =  GeneralUtility::makeInstance(EventDispatcher::class);
                 $tagsToBeFlushed = $eventDispatcher->dispatch(
@@ -109,7 +108,7 @@ class DataHandler
                 )->getCacheTags();
 
                 $tagsToBeFlushed = array_unique($tagsToBeFlushed);
-                foreach($tagsToBeFlushed as $cacheTag) {
+                foreach ($tagsToBeFlushed as $cacheTag) {
                     if ($tsCache->isValidTag($cacheTag)) {
                         $tsCache->flushByTag($cacheTag);
                     }
@@ -131,13 +130,11 @@ class DataHandler
 
                 break;
 
-            // default is also just flush all
+                // default is also just flush all
             case 'From all pages':
             default:
-            $tsCache->flush();
+                $tsCache->flush();
                 break;
         }
-
     }
-
 }

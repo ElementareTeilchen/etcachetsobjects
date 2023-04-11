@@ -17,14 +17,14 @@
     {
       "name": "Franz Kugelmann",
       "role": "Developer",
-      "homepage": "http://www.elementare-teilchen.de"
+      "homepage": "https://www.elementare-teilchen.de"
     }
   ],
   "license": [
     "GPL-2.0+"
   ],
   "require": {
-    "typo3/cms-core": "^10.4.32"
+    "typo3/cms-core": "^11.5"
   },
   "autoload": {
     "psr-4": {

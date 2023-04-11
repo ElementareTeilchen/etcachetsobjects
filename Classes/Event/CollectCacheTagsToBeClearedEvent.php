@@ -37,15 +37,9 @@ namespace ElementareTeilchen\Etcachetsobjects\Event;
 
 final class CollectCacheTagsToBeClearedEvent
 {
-    /**
-     * @var int
-     */
-    private $pageId;
+    private int $pageId = 0;
 
-    /**
-     * @var array
-     */
-    private $cacheTags;
+    private array $cacheTags = [];
 
     /**
      * CollectCacheTagsToBeClearedEvent constructor.
@@ -59,31 +53,22 @@ final class CollectCacheTagsToBeClearedEvent
         $this->cacheTags = $cacheTags;
     }
 
-    public function getPageId() : int
+    public function getPageId(): int
     {
         return $this->pageId;
     }
 
-    /**
-     * @return array
-     */
-    public function getCacheTags() : array
+    public function getCacheTags(): array
     {
         return $this->cacheTags;
     }
 
-    /**
-     * @param array $cacheTags
-     */
-    public function setCacheTags(array $cacheTags) : void
+    public function setCacheTags(array $cacheTags): void
     {
         $this->cacheTags = $cacheTags;
     }
 
-    /**
-     * @param array $cacheTags
-     */
-    public function addCacheTags(array $cacheTags) : void
+    public function addCacheTags(array $cacheTags): void
     {
         $this->cacheTags = array_merge($this->cacheTags, $cacheTags);
     }

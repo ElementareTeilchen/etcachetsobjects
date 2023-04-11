@@ -1,4 +1,5 @@
 <?php
+
 namespace ElementareTeilchen\Etcachetsobjects;
 
 use TYPO3\CMS\Core\Site\Entity\Site;
@@ -143,7 +144,7 @@ class TypoScriptCache extends AbstractPlugin
      */
     protected function checkCache($currentCache, $conf, $cacheIdentifier, $cacheTags=array())
     {
-        if (FALSE === ($content = $currentCache->get($cacheIdentifier))) {
+        if (false === ($content = $currentCache->get($cacheIdentifier))) {
             $content = $this->cObj->getContentObject($conf['conf'])->render($conf['conf.']);
 
             // make sure we do not cache elements when in preview mode
@@ -159,7 +160,6 @@ class TypoScriptCache extends AbstractPlugin
             if (isset($conf['additionalTags.']) && is_array($conf['additionalTags.'])) {
                 foreach ($conf['additionalTags.'] as $tag) {
                     $cacheTags[] = $tag;
-
                 }
             }
 
@@ -173,5 +173,4 @@ class TypoScriptCache extends AbstractPlugin
         }
         return $content;
     }
-
 }
