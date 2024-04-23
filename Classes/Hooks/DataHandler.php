@@ -89,7 +89,7 @@ class DataHandler
     private function handleFlushing($pageId): void
     {
         /** @var FrontendInterface $tsCache */
-        $tsCache = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('etcachetsobjects_db');
+        $tsCache = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('etcachetsobjects_db');
         $extConfiguration = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['etcachetsobjects'];
 
         switch ($extConfiguration['clearCacheVariant']) {
@@ -100,7 +100,7 @@ class DataHandler
                     return;
                 }
                 $pageTSconfig = BackendUtility::getPagesTSconfig($pageId);
-                $tagsToBeFlushed = explode(',', @$pageTSconfig['tx_etcachetsobjects.']['clearByTags']);
+                $tagsToBeFlushed = explode(',', (string) @$pageTSconfig['tx_etcachetsobjects.']['clearByTags']);
 
                 $eventDispatcher =  GeneralUtility::makeInstance(EventDispatcher::class);
                 $tagsToBeFlushed = $eventDispatcher->dispatch(

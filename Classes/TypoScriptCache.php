@@ -69,8 +69,8 @@ class TypoScriptCache extends AbstractPlugin
      */
     public function databaseBackend($content, $conf)
     {
-        $tsCache = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('etcachetsobjects_db');
-        $uniqueCacheIdentifiers = array();
+        $tsCache = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('etcachetsobjects_db');
+        $uniqueCacheIdentifiers = [];
 
         // each BE user gets own cache because of access restricted pages
         // on big sites this makes sense because if editor works on content
@@ -107,7 +107,7 @@ class TypoScriptCache extends AbstractPlugin
      */
     public function transientBackend($content, $conf)
     {
-        $tsCache = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Cache\\CacheManager')->getCache('etcachetsobjects_transient');
+        $tsCache = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('etcachetsobjects_transient');
         $cacheIdentifier = $this->createCacheIdentifier($conf);
         return $this->checkCache($tsCache, $conf, $cacheIdentifier);
     }
@@ -118,7 +118,7 @@ class TypoScriptCache extends AbstractPlugin
      * @param array $uniqueCacheIdentifiers
      * @return string
      */
-    protected function createCacheIdentifier($conf, $uniqueCacheIdentifiers = array())
+    protected function createCacheIdentifier($conf, $uniqueCacheIdentifiers = [])
     {
         // additionalUniqueCacheParameters via TypoScript
         if (isset($conf['additionalUniqueCacheParameters']) && is_array($conf['additionalUniqueCacheParameters.'])) {
@@ -142,7 +142,7 @@ class TypoScriptCache extends AbstractPlugin
      * @param $cacheTags
      * @return string
      */
-    protected function checkCache($currentCache, $conf, $cacheIdentifier, $cacheTags=array())
+    protected function checkCache($currentCache, $conf, $cacheIdentifier, $cacheTags = [])
     {
         if (false === ($content = $currentCache->get($cacheIdentifier))) {
             $content = $this->cObj->getContentObject($conf['conf'])->render($conf['conf.']);

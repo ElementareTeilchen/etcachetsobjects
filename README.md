@@ -4,7 +4,7 @@ etcachetsobjects: Caching possibility for expensive TypoScript Objects like menu
 ## Idea behind
 
 On bigger pages you have quite often big menus with lots of pages and levels (like responsive menus or flyout menus)
-The rendering of these menus is quite heavy and is normally done on every rendered page. 
+The rendering of these menus is quite heavy and is normally done on every rendered page.
 If you do not need to mark active or current pages or do this on browser side via Javascript, then the menu might be idential on all / several pages.
 Perfect to be cached!
 
@@ -33,11 +33,7 @@ HINT FOR DEBUGGING: we activate caching only if no FE user is logged in. Every B
                 10 = TEXT
                 10.value = 0
                 10.override.data = siteLanguage:languageId
-    
-                15 = TEXT
-                15.value = 0
-                15.override.data = GP:contrast
-     
+
                 20 = TEXT
                 20.value = {$theme.pages.sectorstart_id}
             }
@@ -64,14 +60,10 @@ That one is used when you have a very big and deep page tree. On a certain level
                 10 = TEXT
                 10.value = 0
                 10.override.data = GP:L
-    
-                15 = TEXT
-                15.value = 0
-                15.override.data = GP:contrast
-    
+
                 20 = TEXT
                 20.value = {$theme.pages.sectorstart_id}
-    
+
                 // special handling because of level 5/6
                 // if on level 4 and page has subpages or if on level 5 and deeper we have individual menus
                 30 = USER
@@ -79,7 +71,7 @@ That one is used when you have a very big and deep page tree. On a certain level
                 30.sectorstartId = {$theme.pages.sectorstart_id}
                 30.individualMenusComingAtLevel = 4
             }
-    
+
             // no ContentObject like COA, TEXT needed, we just want the configuration value
             additionalTags {
                 10 = sector_{$theme.pages.sectorstart_id}
@@ -100,7 +92,7 @@ That one is used when you have a very big and deep page tree. On a certain level
         userFunc = ElementareTeilchen\Etcachetsobjects\TypoScriptCache->transientBackend
         conf < lib.pageRootlineCategoryId
     }
-    
+
     // then just replace _lib.pageRootlineCategoryId_ with _lib.pageRootlineCategoryId_cached_ whereever you use it.
 
 ## Cache Invalidation
