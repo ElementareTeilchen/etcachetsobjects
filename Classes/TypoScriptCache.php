@@ -2,10 +2,14 @@
 
 namespace ElementareTeilchen\Etcachetsobjects;
 
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Frontend\Plugin\AbstractPlugin;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -37,12 +41,18 @@ use TYPO3\CMS\Core\Context\Context;
  * @subpackage    tx_etcachetsobjects
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class TypoScriptCache extends AbstractPlugin
+class TypoScriptCache
 {
-    public $extKey = 'etcachetsobjects';
+    public string $extKey = 'etcachetsobjects';
 
+    protected ContentObjectRenderer $cObj;
+
+
+    public function setContentObjectRenderer(ContentObjectRenderer $cObj): void
+    {
+        $this->cObj = $cObj;
+    }
 
     /**
      * before 3.0 this method was called by TS,
@@ -50,12 +60,13 @@ class TypoScriptCache extends AbstractPlugin
      *
      * @param    string $content : The PlugIn content
      * @param    array $conf : The PlugIn configuration
-     * @return    The content that is displayed on the website
+     * @param    ServerRequestInterface $request : The current request object
+     * @return   string : The content that is displayed on the website
      * @deprecated
      */
-    public function handleElement($content, $conf)
+    public function handleElement(string $content, array $conf, ServerRequestInterface $request): string
     {
-        return $this->databaseBackend($content, $conf);
+        return $this->databaseBackend($content, $conf, $request);
     }
 
 
@@ -65,9 +76,10 @@ class TypoScriptCache extends AbstractPlugin
      *
      * @param    string $content : The PlugIn content
      * @param    array $conf : The PlugIn configuration
-     * @return    The content that is displayed on the website
+     * @param    ServerRequestInterface $request : The current request object
+     * @return   string : The content that is displayed on the website
      */
-    public function databaseBackend($content, $conf)
+    public function databaseBackend(string $content, array $conf, ServerRequestInterface $request): string
     {
         $tsCache = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('etcachetsobjects_db');
         $uniqueCacheIdentifiers = [];
@@ -103,9 +115,10 @@ class TypoScriptCache extends AbstractPlugin
      *
      * @param    string $content : The PlugIn content
      * @param    array $conf : The PlugIn configuration
-     * @return    The content that is displayed on the website
+     * @param    ServerRequestInterface $request : The current request object
+     * @return   string : The content that is displayed on the website
      */
-    public function transientBackend($content, $conf)
+    public function transientBackend(string $content, array $conf, ServerRequestInterface $request): string
     {
         $tsCache = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('etcachetsobjects_transient');
         $cacheIdentifier = $this->createCacheIdentifier($conf);
@@ -114,11 +127,11 @@ class TypoScriptCache extends AbstractPlugin
 
 
     /**
-     * @param $conf
+     * @param array $conf
      * @param array $uniqueCacheIdentifiers
      * @return string
      */
-    protected function createCacheIdentifier($conf, $uniqueCacheIdentifiers = [])
+    protected function createCacheIdentifier(array $conf, array $uniqueCacheIdentifiers = []): string
     {
         // additionalUniqueCacheParameters via TypoScript
         if (isset($conf['additionalUniqueCacheParameters']) && is_array($conf['additionalUniqueCacheParameters.'])) {
@@ -136,13 +149,18 @@ class TypoScriptCache extends AbstractPlugin
      * fetch content if there or
      * create, store in cache and return content
      *
-     * @param $currentCache
-     * @param $conf
-     * @param $cacheIdentifier
-     * @param $cacheTags
+     * @param FrontendInterface $currentCache
+     * @param array $conf
+     * @param string $cacheIdentifier
+     * @param array $cacheTags
      * @return string
      */
-    protected function checkCache($currentCache, $conf, $cacheIdentifier, $cacheTags = [])
+    protected function checkCache(
+        FrontendInterface $currentCache,
+        array $conf,
+        string $cacheIdentifier,
+        array $cacheTags = []
+    ): string
     {
         if (false === ($content = $currentCache->get($cacheIdentifier))) {
             $content = $this->cObj->getContentObject($conf['conf'])->render($conf['conf.']);
