@@ -5,10 +5,10 @@ etcachetsobjects: Caching possibility for expensive TypoScript Objects like menu
 
 On bigger pages you have quite often big menus with lots of pages and levels (like responsive menus or flyout menus)
 The rendering of these menus is quite heavy and is normally done on every rendered page.
-If you do not need to mark active or current pages or do this on browser side via Javascript, then the menu might be idential on all / several pages.
+If you do not need to mark active or current pages or do this client side via JavaScript, then the menu might be identical on all / several pages.
 Perfect to be cached!
 
-Currently we use it only for menus, other TypoScript objects should work, but probably the cache invalidation needs refinement then.
+Currently, we use it only for menus, other TypoScript objects should work, but probably the cache invalidation needs refinement then.
 
 HINT FOR DEBUGGING: we activate caching only if no FE user is logged in. Every BE user gets her own individual cache.
 
@@ -24,7 +24,7 @@ HINT FOR DEBUGGING: we activate caching only if no FE user is logged in. Every B
         lib.menu.sector_cached >
         lib.menu.sector_cached = USER
         lib.menu.sector_cached {
-            userFunc = ElementareTeilchen\Etcachetsobjects\TypoScriptCache->databaseBackend
+            userFunc = ElementareTeilchen\Etcachetsobjects\UserFunc\Cache\DatabaseBackendCacheHandler->handle
             conf < lib.menu.sector
             cacheTime = 0 // "0" means unlimited liftime, cleared via backend saving hook on page changes
             //here we can set parameter needed for creating different cache entries
@@ -51,7 +51,7 @@ That one is used when you have a very big and deep page tree. On a certain level
         lib.menu.sector_cached >
         lib.menu.sector_cached = USER
         lib.menu.sector_cached {
-            userFunc = ElementareTeilchen\Etcachetsobjects\TypoScriptCache->databaseBackend
+            userFunc = ElementareTeilchen\Etcachetsobjects\UserFunc\Cache\DatabaseBackendCacheHandler->handle
             conf < lib.menu.sector
             cacheTime = 0 // "0" means unlimited liftime, cleared via backend saving hook on page changes
             //here we can set parameter needed for creating different cache entries
@@ -67,7 +67,7 @@ That one is used when you have a very big and deep page tree. On a certain level
                 // special handling because of level 5/6
                 // if on level 4 and page has subpages or if on level 5 and deeper we have individual menus
                 30 = USER
-                30.userFunc = ElementareTeilchen\Etcachetsobjects\MenuVariantCheck->levelGroupIdentifier
+                30.userFunc = ElementareTeilchen\Etcachetsobjects\UserFunc\MenuVariantCheck->levelGroupIdentifier
                 30.sectorstartId = {$theme.pages.sectorstart_id}
                 30.individualMenusComingAtLevel = 4
             }
@@ -89,11 +89,11 @@ That one is used when you have a very big and deep page tree. On a certain level
 
     lib.pageRootlineCategoryId_cached = USER
     lib.pageRootlineCategoryId_cached {
-        userFunc = ElementareTeilchen\Etcachetsobjects\TypoScriptCache->transientBackend
+        userFunc = ElementareTeilchen\Etcachetsobjects\UserFunc\Cache\TransientBackendCacheHandler->handle
         conf < lib.pageRootlineCategoryId
     }
 
-    // then just replace _lib.pageRootlineCategoryId_ with _lib.pageRootlineCategoryId_cached_ whereever you use it.
+    // then just replace _lib.pageRootlineCategoryId_ with _lib.pageRootlineCategoryId_cached_ wherever you use it.
 
 ## Cache Invalidation
 
@@ -111,7 +111,7 @@ When configuring your cached menus / libs, you can add additional cache tags.
 Example:
 ```
 lib.menu.sector_cached {
-    userFunc = ElementareTeilchen\Etcachetsobjects\TypoScriptCache->databaseBackend
+    userFunc = ElementareTeilchen\Etcachetsobjects\UserFunc\Cache\DatabaseBackendCacheHandler->handle
     conf < lib.menu.sector
 
     ...
@@ -138,5 +138,3 @@ Clear cache of whole site in which the edited page record resides in.
 
 ### From all pages
 Clear all cache when a page record is edited.
-
-
