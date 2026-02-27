@@ -2,12 +2,10 @@
 
 namespace ElementareTeilchen\Etcachetsobjects;
 
-use TYPO3\CMS\Core\Cache\CacheManager;
+use ElementareTeilchen\Etcachetsobjects\UserFunc\Cache\DatabaseBackendCacheHandler;
+use ElementareTeilchen\Etcachetsobjects\UserFunc\Cache\TransientBackendCacheHandler;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\Site\Entity\Site;
-use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /***************************************************************
@@ -47,12 +45,6 @@ class TypoScriptCache
     public string $extKey = 'etcachetsobjects';
 
     protected ContentObjectRenderer $cObj;
-    public function __construct(
-        private readonly CacheManager $cacheManager,
-        private readonly Context $context,
-        private readonly SiteFinder $siteFinder
-    ) {}
-
 
     public function setContentObjectRenderer(ContentObjectRenderer $cObj): void
     {
@@ -67,7 +59,8 @@ class TypoScriptCache
      * @param    array $conf : The PlugIn configuration
      * @param    ServerRequestInterface $request : The current request object
      * @return   string : The content that is displayed on the website
-     * @deprecated
+     *
+     * @deprecated Replaced by `\ElementareTeilchen\Etcachetsobjects\UserFunc\Cache\DatabaseBackendCacheHandler->handle`
      */
     public function handleElement(string $content, array $conf, ServerRequestInterface $request): string
     {
@@ -83,35 +76,14 @@ class TypoScriptCache
      * @param    array $conf : The PlugIn configuration
      * @param    ServerRequestInterface $request : The current request object
      * @return   string : The content that is displayed on the website
+     *
+     * @deprecated Replaced by `\ElementareTeilchen\Etcachetsobjects\UserFunc\Cache\DatabaseBackendCacheHandler->handle`
      */
     public function databaseBackend(string $content, array $conf, ServerRequestInterface $request): string
     {
-        $tsCache = $this->cacheManager->getCache('etcachetsobjects_db');
-        $uniqueCacheIdentifiers = [];
-
-        // each BE user gets own cache because of access restricted pages
-        // on big sites this makes sense because if editor works on content
-        // she has to wait several seconds each time she checks the frontend mainly because of the menu
-        if ($this->context->getPropertyFromAspect('backend.user', 'isLoggedIn')
-            && $this->context->getPropertyFromAspect('backend.user', 'id', 0) !== 0
-        ) {
-            $uniqueCacheIdentifiers['beUser'] = $this->context->getPropertyFromAspect('backend.user', 'id');
-        }
-
-        $cacheTags = [];
-
-        $site = $this->siteFinder->getSiteByPageId(
-            $request->getAttribute('frontend.page.information')->getId()
-        );
-        if ($site instanceof Site) {
-            // MIND: if you change identifier here, do also in hook for cache clearing
-            $uniqueCacheIdentifiers['siteIdentifier'] = $site->getIdentifier();
-            $cacheTags[] = $site->getIdentifier();
-        }
-
-        $cacheIdentifier = $this->createCacheIdentifier($conf, $uniqueCacheIdentifiers);
-
-        return $this->checkCache($tsCache, $conf, $cacheIdentifier, $cacheTags);
+        $cacheHandler = GeneralUtility::makeInstance(DatabaseBackendCacheHandler::class);
+        $cacheHandler->setContentObjectRenderer($this->cObj);
+        return $cacheHandler->handle($content, $conf, $request);
     }
 
 
@@ -124,63 +96,13 @@ class TypoScriptCache
      * @param    array $conf : The PlugIn configuration
      * @param    ServerRequestInterface $request : The current request object
      * @return   string : The content that is displayed on the website
+     *
+     * @deprecated Replaced by `\ElementareTeilchen\Etcachetsobjects\UserFunc\Cache\TransientBackendCacheHandler->handle`
      */
     public function transientBackend(string $content, array $conf, ServerRequestInterface $request): string
     {
-        $tsCache = $this->cacheManager->getCache('etcachetsobjects_transient');
-        $cacheIdentifier = $this->createCacheIdentifier($conf);
-        return $this->checkCache($tsCache, $conf, $cacheIdentifier);
-    }
-
-    protected function createCacheIdentifier(array $conf, array $uniqueCacheIdentifiers = []): string
-    {
-        // additionalUniqueCacheParameters via TypoScript
-        if (isset($conf['additionalUniqueCacheParameters']) && is_array($conf['additionalUniqueCacheParameters.'])) {
-            $uniqueCacheIdentifiers['typoScript'] = $this->cObj->getContentObject($conf['additionalUniqueCacheParameters'])->render($conf['additionalUniqueCacheParameters.']);
-        }
-
-        return sha1(serialize($uniqueCacheIdentifiers) . serialize($conf));
-    }
-
-
-    /**
-     * check if cache already exists
-     * fetch content if there or
-     * create, store in cache and return content
-     */
-    protected function checkCache(
-        FrontendInterface $currentCache,
-        array $conf,
-        string $cacheIdentifier,
-        array $cacheTags = []
-    ): string
-    {
-        if (false === ($content = $currentCache->get($cacheIdentifier))) {
-            $content = $this->cObj->getContentObject($conf['conf'])->render($conf['conf.']);
-
-            // make sure we do not cache elements when in preview mode
-            // i.e. hidden pages are shown in menu
-            if ($this->context->getPropertyFromAspect('frontend.preview', 'isPreview')
-                || $this->context->getPropertyFromAspect('visibility', 'includeHiddenPages')
-            ) {
-                return $content;
-            }
-
-            // additionalTags via TypoScript
-            if (isset($conf['additionalTags.']) && is_array($conf['additionalTags.'])) {
-                foreach ($conf['additionalTags.'] as $tag) {
-                    $cacheTags[] = $tag;
-                }
-            }
-
-            $currentCache->set(
-                $cacheIdentifier,
-                $content,
-                $cacheTags,
-                (int)$conf['cacheTime']
-            );
-            return $content;
-        }
-        return $content;
+        $cacheHandler = GeneralUtility::makeInstance(TransientBackendCacheHandler::class);
+        $cacheHandler->setContentObjectRenderer($this->cObj);
+        return $cacheHandler->handle($content, $conf, $request);
     }
 }

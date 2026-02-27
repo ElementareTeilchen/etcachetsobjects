@@ -6,3 +6,21 @@ services:
 
   ElementareTeilchen\Etcachetsobjects\MenuVariantCheck:
     public: true
+
+  ElementareTeilchen\Etcachetsobjects\UserFunc\Cache\DatabaseBackendCacheHandler:
+    public: true
+    shared: false
+
+  ElementareTeilchen\Etcachetsobjects\UserFunc\Cache\TransientBackendCacheHandler:
+    public: true
+    shared: false
+
+  cache.etcachetsobjects_db:
+    class: TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
+    factory: ['@TYPO3\CMS\Core\Cache\CacheManager', 'getCache']
+    arguments: ['etcachetsobjects_db']
+
+  cache.etcachetsobjects_transient:
+    class: TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
+    factory: ['@TYPO3\CMS\Core\Cache\CacheManager', 'getCache']
+    arguments: ['etcachetsobjects_transient']
