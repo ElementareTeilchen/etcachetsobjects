@@ -2,12 +2,12 @@
 
 namespace ElementareTeilchen\Etcachetsobjects;
 
+use TYPO3\CMS\Core\Cache\CacheManager;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Context\Context;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /***************************************************************
@@ -47,6 +47,11 @@ class TypoScriptCache
     public string $extKey = 'etcachetsobjects';
 
     protected ContentObjectRenderer $cObj;
+    public function __construct(
+        private readonly CacheManager $cacheManager,
+        private readonly Context $context,
+        private readonly SiteFinder $siteFinder
+    ) {}
 
 
     public function setContentObjectRenderer(ContentObjectRenderer $cObj): void
@@ -81,21 +86,23 @@ class TypoScriptCache
      */
     public function databaseBackend(string $content, array $conf, ServerRequestInterface $request): string
     {
-        $tsCache = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('etcachetsobjects_db');
+        $tsCache = $this->cacheManager->getCache('etcachetsobjects_db');
         $uniqueCacheIdentifiers = [];
 
         // each BE user gets own cache because of access restricted pages
         // on big sites this makes sense because if editor works on content
         // she has to wait several seconds each time she checks the frontend mainly because of the menu
-        $context = GeneralUtility::makeInstance(Context::class);
-        if ($context->getPropertyFromAspect('backend.user', 'isLoggedIn') && !empty($GLOBALS['BE_USER']->user['uid'])) {
-            $uniqueCacheIdentifiers['beUser'] = $GLOBALS['BE_USER']->user['uid'];
+        if ($this->context->getPropertyFromAspect('backend.user', 'isLoggedIn')
+            && $this->context->getPropertyFromAspect('backend.user', 'id', 0) !== 0
+        ) {
+            $uniqueCacheIdentifiers['beUser'] = $this->context->getPropertyFromAspect('backend.user', 'id');
         }
 
         $cacheTags = [];
 
-        $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
-        $site = $siteFinder->getSiteByPageId($GLOBALS['TSFE']->id);
+        $site = $this->siteFinder->getSiteByPageId(
+            $request->getAttribute('frontend.page.information')->getId()
+        );
         if ($site instanceof Site) {
             // MIND: if you change identifier here, do also in hook for cache clearing
             $uniqueCacheIdentifiers['siteIdentifier'] = $site->getIdentifier();
@@ -120,17 +127,11 @@ class TypoScriptCache
      */
     public function transientBackend(string $content, array $conf, ServerRequestInterface $request): string
     {
-        $tsCache = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('etcachetsobjects_transient');
+        $tsCache = $this->cacheManager->getCache('etcachetsobjects_transient');
         $cacheIdentifier = $this->createCacheIdentifier($conf);
         return $this->checkCache($tsCache, $conf, $cacheIdentifier);
     }
 
-
-    /**
-     * @param array $conf
-     * @param array $uniqueCacheIdentifiers
-     * @return string
-     */
     protected function createCacheIdentifier(array $conf, array $uniqueCacheIdentifiers = []): string
     {
         // additionalUniqueCacheParameters via TypoScript
@@ -138,9 +139,7 @@ class TypoScriptCache
             $uniqueCacheIdentifiers['typoScript'] = $this->cObj->getContentObject($conf['additionalUniqueCacheParameters'])->render($conf['additionalUniqueCacheParameters.']);
         }
 
-        $cacheIdentifier = sha1(serialize($uniqueCacheIdentifiers) . serialize($conf));
-
-        return $cacheIdentifier;
+        return sha1(serialize($uniqueCacheIdentifiers) . serialize($conf));
     }
 
 
@@ -148,12 +147,6 @@ class TypoScriptCache
      * check if cache already exists
      * fetch content if there or
      * create, store in cache and return content
-     *
-     * @param FrontendInterface $currentCache
-     * @param array $conf
-     * @param string $cacheIdentifier
-     * @param array $cacheTags
-     * @return string
      */
     protected function checkCache(
         FrontendInterface $currentCache,
@@ -167,9 +160,8 @@ class TypoScriptCache
 
             // make sure we do not cache elements when in preview mode
             // i.e. hidden pages are shown in menu
-            $context = GeneralUtility::makeInstance(Context::class);
-            if ($context->getPropertyFromAspect('frontend.preview', 'isPreview')
-                || $context->getPropertyFromAspect('visibility', 'includeHiddenPages')
+            if ($this->context->getPropertyFromAspect('frontend.preview', 'isPreview')
+                || $this->context->getPropertyFromAspect('visibility', 'includeHiddenPages')
             ) {
                 return $content;
             }

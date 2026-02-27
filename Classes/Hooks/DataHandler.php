@@ -29,17 +29,21 @@ namespace ElementareTeilchen\Etcachetsobjects\Hooks;
  *
  * @author    Franz Kugelmann <franz.kugelmann@elementare-teilchen.de>
  */
-
+use TYPO3\CMS\Core\Cache\CacheManager;
 use ElementareTeilchen\Etcachetsobjects\Event\CollectCacheTagsToBeClearedEvent;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DataHandler
 {
+    public function __construct(
+        private readonly CacheManager $cacheManager,
+        private readonly EventDispatcher $eventDispatcher,
+        private readonly SiteFinder $siteFinder
+    ) {}
     /*
     * we need to clear our TS object caches if menu relevant data is saved in pages (title, nav_title, ...)
      * @param array Changed fields
@@ -69,7 +73,6 @@ class DataHandler
      * @param int Record uid
      * @param mixed    Unused
      * @param \TYPO3\CMS\Core\DataHandling\DataHandler Unused reference to parent object
-     * @return    void
      */
     public function processCmdmap_preProcess($command, $table, $id, $value, &$pObj): void
     {
@@ -89,7 +92,7 @@ class DataHandler
     private function handleFlushing($pageId): void
     {
         /** @var FrontendInterface $tsCache */
-        $tsCache = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('etcachetsobjects_db');
+        $tsCache = $this->cacheManager->getCache('etcachetsobjects_db');
         $extConfiguration = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['etcachetsobjects'];
 
         switch ($extConfiguration['clearCacheVariant']) {
@@ -102,8 +105,7 @@ class DataHandler
                 $pageTSconfig = BackendUtility::getPagesTSconfig($pageId);
                 $tagsToBeFlushed = explode(',', (string) @$pageTSconfig['tx_etcachetsobjects.']['clearByTags']);
 
-                $eventDispatcher =  GeneralUtility::makeInstance(EventDispatcher::class);
-                $tagsToBeFlushed = $eventDispatcher->dispatch(
+                $tagsToBeFlushed = $this->eventDispatcher->dispatch(
                     new CollectCacheTagsToBeClearedEvent($pageId, $tagsToBeFlushed)
                 )->getCacheTags();
 
@@ -122,8 +124,7 @@ class DataHandler
                     return;
                 }
 
-                $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
-                $site = $siteFinder->getSiteByPageId($pageId);
+                $site = $this->siteFinder->getSiteByPageId($pageId);
                 if ($site instanceof Site) {
                     $tsCache->flushByTag($site->getIdentifier());
                 }
