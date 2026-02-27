@@ -4,6 +4,10 @@ services:
     autoconfigure: true
     public: false
 
+  ElementareTeilchen\Etcachetsobjects\Hooks\DataHandler:
+    public: true
+    shared: false
+
   ElementareTeilchen\Etcachetsobjects\UserFunc\MenuVariantCheck:
     public: true
 
