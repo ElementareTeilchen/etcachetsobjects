@@ -4,7 +4,7 @@ services:
     autoconfigure: true
     public: false
 
-  ElementareTeilchen\Etcachetsobjects\MenuVariantCheck:
+  ElementareTeilchen\Etcachetsobjects\UserFunc\MenuVariantCheck:
     public: true
 
   ElementareTeilchen\Etcachetsobjects\UserFunc\Cache\DatabaseBackendCacheHandler:
